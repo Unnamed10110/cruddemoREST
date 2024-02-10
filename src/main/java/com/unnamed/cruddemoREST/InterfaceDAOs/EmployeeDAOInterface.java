@@ -9,4 +9,10 @@ public interface EmployeeDAOInterface {
     List<Employee> findAll();
 
     Employee findById(int id);
+
+    Employee deleteById(int id);
+
+    Employee addUpdateEmployee(Employee employee);
+
+
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class EmployeeDAO implements EmployeeDAOInterface {
 
     @Override
     public List<Employee> findAll() {
-        String queryString = "FROM Employee a ORDER BY a.lastName";
+        String queryString = "FROM Employee a ORDER BY a.id";
 
         TypedQuery<Employee> res = entityManager.createQuery(queryString, Employee.class);
         var res2=res.getResultList();
@@ -34,5 +35,24 @@ public class EmployeeDAO implements EmployeeDAOInterface {
     public Employee findById(int id) {
         return entityManager.find(Employee.class, id);
     }
+
+    @Override
+    @Transactional
+    public Employee deleteById(int id) {
+        var employee=entityManager.find(Employee.class,id);
+        var aux=employee;
+        entityManager.remove(employee);
+        return aux;
+    }
+
+    @Override
+    @Transactional
+    public Employee addUpdateEmployee(Employee employee) {
+        var aux= entityManager.merge(employee);
+        return aux;
+    }
+
+
+
 
 }
