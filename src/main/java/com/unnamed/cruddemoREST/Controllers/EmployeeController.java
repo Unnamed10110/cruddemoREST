@@ -3,29 +3,51 @@ package com.unnamed.cruddemoREST.Controllers;
 import com.unnamed.cruddemoREST.DAOs.EmployeeDAO;
 import com.unnamed.cruddemoREST.Entities.Employee;
 import com.unnamed.cruddemoREST.Models.CustomResponseModel;
+import com.unnamed.cruddemoREST.Service.EmployeeServiceJPA;
+import jakarta.websocket.server.PathParam;
 import jdk.jshell.Snippet;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Query;
+//import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/v1")
 public class EmployeeController {
     private final EmployeeDAO employeeDAO;
+    private final EmployeeServiceJPA employeeServiceJPA;
 
-    public EmployeeController(EmployeeDAO employeeDAO) {
+    public EmployeeController(EmployeeDAO employeeDAO, EmployeeServiceJPA employeeServiceJPA) {
         this.employeeDAO = employeeDAO;
+        this.employeeServiceJPA = employeeServiceJPA;
     }
 
     @GetMapping("/employees")
     public ResponseEntity<CustomResponseModel> GetEmployees(){
-        var employees=employeeDAO.findAll();
 
-        var responseEntity=new ResponseEntity<CustomResponseModel>(new CustomResponseModel(HttpStatus.OK.value(), employees, System.currentTimeMillis()),HttpStatus.OK);
+        var employees2=employeeServiceJPA.findAll();
+        var responseEntity=new ResponseEntity<CustomResponseModel>(new CustomResponseModel(HttpStatus.OK.value(), employees2, System.currentTimeMillis()),HttpStatus.OK);
 
         return responseEntity;
+
+    }
+    @GetMapping("/employees/pages/{pagina}/{cantidad}")
+    public ResponseEntity<CustomResponseModel> GetEmployeesPaginated(@PathVariable("pagina") int pagina, @PathVariable("cantidad") int cantidad, @RequestParam LinkedHashMap<String,String> variosParametros){
+
+            var employees2=employeeServiceJPA.findAllPaginated(pagina,cantidad);
+            var responseEntity=new ResponseEntity<CustomResponseModel>(new CustomResponseModel(HttpStatus.OK.value(), employees2, System.currentTimeMillis()),HttpStatus.OK);
+
+            return responseEntity;
+
     }
 
     @GetMapping("/employees/{employeeId}")
